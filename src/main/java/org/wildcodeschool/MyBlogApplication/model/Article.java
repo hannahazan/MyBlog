@@ -1,7 +1,9 @@
 package org.wildcodeschool.MyBlogApplication.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,9 +19,11 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @JsonFormat
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @JsonFormat
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
