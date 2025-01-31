@@ -27,6 +27,10 @@ public class Article {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     // Getters et setters
 
     public Long getId() {
@@ -68,4 +72,13 @@ public class Article {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public Category getCategory(){
+        return this.category;
+    }
+
+    public void setCategory(Category category){
+        this.category = category;
+    }
+
 }
