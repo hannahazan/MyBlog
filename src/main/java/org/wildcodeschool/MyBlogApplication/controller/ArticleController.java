@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.MyBlogApplication.model.Article;
 import org.wildcodeschool.MyBlogApplication.model.Category;
+import org.wildcodeschool.MyBlogApplication.model.ArticleAuthor;
+import org.wildcodeschool.MyBlogApplication.dto.ArticleAuthorDTO;
+import org.wildcodeschool.MyBlogApplication.model.Author;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleDTO;
+import org.wildcodeschool.MyBlogApplication.dto.AuthorDTO;
 import org.wildcodeschool.MyBlogApplication.model.Image;
-import org.wildcodeschool.MyBlogApplication.repository.ArticleRepository;
-import org.wildcodeschool.MyBlogApplication.repository.CategoryRepository;
-import org.wildcodeschool.MyBlogApplication.repository.ImageRepository;
+import org.wildcodeschool.MyBlogApplication.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,11 +25,16 @@ public class ArticleController {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
+    private final ArticleAuthorRepository articleAuthorRepository;
+    private final AuthorRepository authorRepository;
 
-    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
+    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository, ImageRepository imageRepository,
+                             ArticleAuthorRepository articleAuthorRepository, AuthorRepository authorRepository) {
         this.articleRepository = articleRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
+        this.articleAuthorRepository = articleAuthorRepository;
+        this.authorRepository = authorRepository;
     }
 
     private ArticleDTO convertToDTO(Article article) {
@@ -41,6 +48,18 @@ public class ArticleController {
         }
         if (article.getImages() != null) {
             articleDTO.setImageUrls(article.getImages().stream().map(Image::getUrl).collect(Collectors.toList()));
+        }
+        if (article.getArticleAuthors() != null) {
+            articleDTO.setArticleAuthors(article.getArticleAuthors().stream()
+                    .filter(articleAuthor -> articleAuthor.getAuthor() != null)
+                    .map(articleAuthor -> {
+                        ArticleAuthorDTO authorDTO = new ArticleAuthorDTO();
+                        authorDTO.setAuthor(articleAuthor.getAuthor().getId());
+                        authorDTO.setArticle(articleAuthor.getArticle().getId());
+                        authorDTO.setContribution(articleAuthor.getContribution());
+                        return authorDTO;
+                    })
+                    .collect(Collectors.toList()));
         }
         return articleDTO;
     }
@@ -128,8 +147,22 @@ public class ArticleController {
             }
             article.setImages(validImages);
         }
-
         Article savedArticle = articleRepository.save(article);
+        if (article.getArticleAuthors() != null) {
+            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+                Author author = articleAuthor.getAuthor();
+                author = authorRepository.findById(author.getId()).orElse(null);
+                if (author == null) {
+                    return ResponseEntity.badRequest().body(null);
+                }
+
+                articleAuthor.setAuthor(author);
+                articleAuthor.setArticle(savedArticle);
+                articleAuthor.setContribution(articleAuthor.getContribution());
+
+                articleAuthorRepository.save(articleAuthor);
+            }
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedArticle));
     }
 
@@ -188,6 +221,13 @@ public class ArticleController {
         Article article = articleRepository.findById(id).orElse(null);
         if (article == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        // Supprimer les associations ArticleAuthor manuellement
+        if (article.getArticleAuthors() != null) {
+            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+                articleAuthorRepository.delete(articleAuthor);
+            }
         }
 
         articleRepository.delete(article);

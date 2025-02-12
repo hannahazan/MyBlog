@@ -11,6 +11,7 @@ public class ArticleDTO {
     private LocalDateTime updatedAt;
     private String categoryName;
     private List<String> imageUrls;
+    private List<ArticleAuthorDTO> articleAuthors;
 
     // Getters et setters
 
@@ -38,7 +39,6 @@ public class ArticleDTO {
         this.content = content;
     }
 
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
@@ -61,5 +61,13 @@ public class ArticleDTO {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public List<ArticleAuthorDTO>getArticleAuthors() {
+        return articleAuthors;
+    }
+
+    public void setArticleAuthors(List<ArticleAuthorDTO> articleAuthors) {
+        this.articleAuthors = articleAuthors;
     }
 }
