@@ -1,6 +1,7 @@
 package org.wildcodeschool.MyBlogApplication.mapper;
 
 import org.springframework.stereotype.Component;
+import org.wildcodeschool.MyBlogApplication.dto.ArticleCreateDTO;
 import org.wildcodeschool.MyBlogApplication.model.*;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleAuthorDTO;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleDTO;
@@ -10,6 +11,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class ArticleMapper {
+
+    public Article convertToEntity(ArticleCreateDTO articleCreateDTO) {
+        Article article = new Article();
+        article.setTitle(articleCreateDTO.getTitle());
+        article.setContent(articleCreateDTO.getContent());
+
+        return article;
+    }
 
     public ArticleDTO convertToDTO(Article article) {
         ArticleDTO articleDTO = new ArticleDTO();
