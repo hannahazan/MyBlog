@@ -3,6 +3,7 @@ package org.wildcodeschool.MyBlogApplication.service;
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleDTO;
 import org.wildcodeschool.MyBlogApplication.mapper.ArticleMapper;
+import org.wildcodeschool.MyBlogApplication.exception.ResourceNotFoundException;
 import org.wildcodeschool.MyBlogApplication.model.*;
 import org.wildcodeschool.MyBlogApplication.repository.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ArticleService {
+public class ArticleService  {
 
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
@@ -62,12 +63,11 @@ public class ArticleService {
     }
 
     public ArticleDTO getArticleById(Long id){
-        Article article = articleRepository.findById(id).orElse(null);
-        if(article == null){
-            return null;
-        }
+        Article article = articleRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("L'article avec l'id" + id + "n'a pas été trouvé"));
         return articleMapper.convertToDTO(article);
     }
+
 
     public ArticleDTO createArticle(Article article){
          article.setCreatedAt(LocalDateTime.now());
