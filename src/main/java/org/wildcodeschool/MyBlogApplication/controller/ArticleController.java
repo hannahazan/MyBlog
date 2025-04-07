@@ -6,21 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleCreateDTO;
 import org.wildcodeschool.MyBlogApplication.model.Article;
-import org.wildcodeschool.MyBlogApplication.model.Category;
-import org.wildcodeschool.MyBlogApplication.model.ArticleAuthor;
-import org.wildcodeschool.MyBlogApplication.dto.ArticleAuthorDTO;
-import org.wildcodeschool.MyBlogApplication.model.Author;
 import org.wildcodeschool.MyBlogApplication.dto.ArticleDTO;
-import org.wildcodeschool.MyBlogApplication.dto.AuthorDTO;
-import org.wildcodeschool.MyBlogApplication.model.Image;
-import org.wildcodeschool.MyBlogApplication.repository.*;
 import org.wildcodeschool.MyBlogApplication.service.ArticleService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/articles")
